@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title%} Contact Book {% endblock %}</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
+        <!-- <link rel="icon" type="image/x-icon" href="{{url_for('static', filename='favicon.ico')}}"> -->
+    </head>
+    <body>
+        <header>
+            <h1>Contact actions:</h1>
+      
+        <nav>
+            <a href="{{url_for('main.index')}}">HOME</a> |
+            <a href="{{url_for('main.add_contact') }}">Add Contact</a>
+        </nav>
+          </header>
+          <hr>
+          <main>
+            {% block content %}{% endblock%}
+          </main>
+    </body>
+</html>

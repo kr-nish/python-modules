@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %} All contacts {% endblock %}
+{% block content %}
+<h2>All Contacts</h2>
+
+{% if contacts %}
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for contact in contacts %}
+        <tr>
+            <td>{{ contact.name }}</td>
+            <td>{{ contact.email }}</td>
+            <td>{{ contact.phone }}</td>
+            <td>
+                <a href="{{url_for('main.edit_contact', contact_id=contact.id)}}">Edit</a>
+                <form method="POST" action="{{ url_for('main.delete_contact', contact_id=contact.id)}}"
+                    style="display: inline;">
+                    <button type="submit" onclick="return confirm('Delete Contact?')">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No Contacts yet <a href="{{ url_for('main.add_contact') }}">Add a contact</a>.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,3 @@
+username is Nishant! 
+User is fond of Python. 
+Adding a new line to show apended data 

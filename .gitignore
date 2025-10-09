@@ -1,0 +1,42 @@
+# Byte-code files
+*.pyc
+__pycache__/
+*.pyd
+*.so
+
+# Virtual environment
+venv/
+.venv/
+env/
+.env/
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Flask specific
+instance/
+.flaskenv
+
+# Database files
+*.sqlite3
+*.db
+*.db-journal
+
+# Logs
+*.log
+
+# Uploaded media (if applicable)
+media/
+
+# Sensitive configuration files (if not managed by environment variables)
+config.py
+settings.py
+
+# Python testing and build artifacts
+.pytest_cache/
+build/
+dist/
+*.egg-info/

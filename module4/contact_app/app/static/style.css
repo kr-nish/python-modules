@@ -1,0 +1,18 @@
+body {
+    font-family:  "Inter", 'Sogoe UI', Roboto, sans-serif;
+    background: #f4f6f8;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background: #2c3e50;
+    color: white;
+    padding: 1.5rem, 2rem;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0,0.1);
+}
