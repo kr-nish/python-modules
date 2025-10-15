@@ -20,3 +20,13 @@ async def parrallel_task():
     
     results = await asyncio.gather(task(1), task(2), task(3))
     return jsonify({"results": results})
+
+@app.route("/external")
+async def call_external():
+    import aiohttp
+    async with aiohttp.ClientSession() as session:
+        async with session.get("https://api.github.com") as resp:
+            data = await resp.json()
+            return jsonify({"Github API status": resp.status, "headers" : list(data.keys()) [:5]})
+if __name__ == "__main__":
+    app.run(port=5000)
