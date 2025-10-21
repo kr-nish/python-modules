@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status,  Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -8,6 +8,9 @@ from typing import List
 from . import models, schemas
 from .auth_database import engine, Base, get_db
 import asyncio
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 #JWT config 
 SECRET_KEY = "this_is_a_fast_api_session_12"
@@ -15,6 +18,10 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 app = FastAPI(title="Auth Service")
+
+limiter = Limiter(key_func=get_remote_address) #IP based rate limiting
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token") #client docs
 
@@ -50,7 +57,8 @@ async def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_d
 
 #login route 
 @app.post("/token", response_model=schemas.Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
+@limiter.limit("5/minute")
+async def login_for_access_token(request: Request,form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(models.User).where(models.User.username == form_data.username))
     user = result.scalar_one_or_none()
     if not user or not user.verify_password(form_data.password):
