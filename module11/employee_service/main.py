@@ -17,6 +17,7 @@ import redis.asyncio as redis
 
 SECRET_KEY = "this_is_a_fast_api_session_12"
 ALGORITHM = "HS256"
+CHANNEL = "employees_events"
 
 app = FastAPI(title="Employee Management Service")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token") #client docs
@@ -27,9 +28,11 @@ async def startup():
         await conn.run_sync(Base.metadata.create_all)
     print("Database schema created")
 
-    redis_client = redis.from_url("redis://localhost:14879", encoding="utf8", decode_response=True)
+    redis_client = redis.from_url("redis://localhost:14879", encoding="utf8", decode_responses=True)
     FastAPICache.init(RedisBackend(redis_client), prefix="fastapi-cache")
     print("Cache init!!")
+
+employee_redis = redis.from_url("redis://localhost:14879", encoding="utf8", decode_responses=True)
 
 async def send_welcome_email(employee_name: str):
     await asyncio.sleep(2)
@@ -62,6 +65,8 @@ async def create_employee(
     new_emp = models.Employee(**employee.dict())
     db.add(new_emp)
     await db.commit()
+    event = {"type" :"employee_created", "data" : {"id" : new_emp.id, "name" : new_emp.name} , "timestamp" : datetime.now().isoformat()}
+    await employee_redis.publish(CHANNEL, json.dumps(event))
     await db.refresh(new_emp)
     response.headers["X-Request-ID"]=f"req-{random.randint(1000,9999)}"
     background_tasks.add_task(send_welcome_email, new_emp.name)

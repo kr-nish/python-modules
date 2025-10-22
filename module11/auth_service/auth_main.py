@@ -17,7 +17,10 @@ SECRET_KEY = "this_is_a_fast_api_session_12"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-app = FastAPI(title="Auth Service")
+app = FastAPI(title="Auth Service",
+              description="This is the Oauth2 based auth service for my ems",
+              version="1.0.2",
+              summary="This service will generate the jwt token which can be used to auth ems endpoints")
 
 limiter = Limiter(key_func=get_remote_address) #IP based rate limiting
 app.state.limiter = limiter
@@ -42,7 +45,7 @@ def create_access_token(data: dict, expire_delta: timedelta | None = None):
     return encoded_jwt
 
 #Create account route    
-@app.post("/users/", response_model=schemas.UserResponse, status_code=status.HTTP_201_CREATED)
+@app.post("/users/", response_model=schemas.UserResponse, status_code=status.HTTP_201_CREATED , description="This api will be used to add an new user which can login later", summary="use this api to create a new user")
 async def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(models.User).where(models.User.username == user.username))
     if result.scalar_one_or_none():
