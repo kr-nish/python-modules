@@ -1,6 +1,25 @@
-fastapi
-uvicorn
-sqlalchemy
-asyncpg
-pydantic
-python-dotenv
+# Core framework
+fastapi==0.115.2
+uvicorn[standard]==0.32.0
+
+# Database and ORM
+SQLAlchemy==2.0.36
+asyncpg==0.29.0  
+
+# JWT and security
+python-jose==3.3.0
+passlib[bcrypt]==1.7.4  # useful for password hashing if used in auth
+
+# Caching
+fastapi-cache2==0.2.2
+redis==5.0.3
+
+# Typing and utilities
+pydantic==2.9.2
+pydantic-settings==2.6.0
+
+# Async support and background tasks
+aiofiles==23.2.1
+
+# Other optional dependencies
+python-multipart==0.0.9  # required if you use form-data endpoints

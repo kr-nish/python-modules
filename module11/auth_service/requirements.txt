@@ -1,9 +1,19 @@
-fastapi
-uvicorn
-sqlalchemy
-asyncpg
-pydantic
-passlib
-python-jose
-python-multipart
-python-dotenv
+# Core framework
+fastapi==0.115.2
+uvicorn[standard]==0.32.0
+
+# Database and ORM
+SQLAlchemy==2.0.36
+asyncpg==0.29.0  
+
+# JWT and security
+python-jose==3.3.0
+passlib[bcrypt]==1.7.4  
+
+# Rate limiting
+slowapi==0.1.9
+
+# Pydantic and typing
+pydantic==2.9.2
+pydantic-settings==2.6.0
+

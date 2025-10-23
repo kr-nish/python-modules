@@ -14,6 +14,7 @@ from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from fastapi_cache.decorator import cache
 import redis.asyncio as redis 
+import functools
 
 SECRET_KEY = "this_is_a_fast_api_session_12"
 ALGORITHM = "HS256"
@@ -53,6 +54,12 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         raise credentials_exception
     return {"username":username}
 
+@functools.lru_cache(maxsize=128)
+async def fetch_employee_cached(db: AsyncSession):
+    """memoized employee fetch ( LRU: 128 entries, evicts the least recent)"""
+    await asyncio.sleep(1)
+    result = await db.execute(select(models.Employee))
+    return result.scalars().all()
 
 @app.post("/employees/", response_model= schemas.EmployeeResponse, status_code=status.HTTP_201_CREATED)
 async def create_employee(
@@ -73,12 +80,19 @@ async def create_employee(
     return new_emp
 
 @app.get("/employees/", response_model=List[schemas.EmployeeResponse])
-@cache(expire=60)
+# @cache(expire=60)
 async def get_employees(db: AsyncSession = Depends(get_db),  current_user: dict = Depends(get_current_user)):
     await asyncio.sleep(1)
     result = await db.execute(select(models.Employee))
+    # employees = await fetch_employee_cached(db)
     employees = result.scalars().all()
     return employees
+
+#endpoint to clear the cache
+@app.post("/employees/cache-clear")
+async def clear_employee_cache():
+    fetch_employee_cached.cache_clear()
+    return {"message":"Cache has been cleared"}
 
 #Get employee by Id
 @app.get("/employees/{emp_id}", response_model=schemas.EmployeeResponse)
