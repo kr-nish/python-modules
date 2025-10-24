@@ -6,10 +6,11 @@ from datetime import datetime
 import redis.asyncio as redis
 from typing import List
 from starlette.websockets import WebSocketState
+from .otel_config import instrument_app, create_span
 
 SECRET_KEY = "this_is_a_fast_api_session_12"
 ALGORITHM = "HS256"
-REDIS_URL = "redis://localhost:14879"
+REDIS_URL = "redis://redis:6379"
 CHANNEL = "employees_events" #Pub/sub channel
 
 app = FastAPI(title="Notification service", description="Real time notification via websocket events")
@@ -24,6 +25,7 @@ async def startup():
     redis_client = redis.from_url(REDIS_URL, encoding="utf8", decode_responses=True)
 
     asyncio.create_task(event_consumer())
+    instrument_app(app)
     print("Notifictaion service has started with redis pub/sub")
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):

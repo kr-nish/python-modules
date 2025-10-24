@@ -16,3 +16,11 @@ aiofiles==23.2.1
 starlette==0.40.0  # required explicitly for WebSocketState import
 pydantic==2.9.2
 pydantic-settings==2.6.0
+email-validator
+pydantic[email]
+opentelemetry-api 
+opentelemetry-sdk 
+opentelemetry-instrumentation-fastapi 
+opentelemetry-instrumentation-sqlalchemy 
+opentelemetry-instrumentation-redis 
+opentelemetry-exporter-otlp-proto-grpc

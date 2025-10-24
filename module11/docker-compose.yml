@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:alpine
+    ports:
+      - "14879:6379"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  auth_service:
+    build:
+      context: .
+      dockerfile: auth_service/Dockerfile
+    command: uvicorn auth_service.auth_main:app --host 0.0.0.0 --port 8001
+    ports:
+      - "8001:8001"
+    depends_on:
+      - redis
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  employee_service:
+    build:
+      context: .
+      dockerfile: employee_service/Dockerfile
+    command: uvicorn employee_service.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+      - auth_service
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  notification_service:
+    build:
+      context: .
+      dockerfile: notification_service/Dockerfile
+    command: uvicorn notification_service.main:app --host 0.0.0.0 --port 8002
+    ports:
+      - "8002:8002"
+    depends_on:
+      - redis
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+      - "14000:14000"
+      - "14001:14001"
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - LOG_LEVEL=debug

@@ -11,6 +11,7 @@ import asyncio
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+from .otel_config import instrument_app, create_span
 
 #JWT config 
 SECRET_KEY = "this_is_a_fast_api_session_12"
@@ -32,6 +33,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token") #client docs
 async def startup():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    instrument_app(app)
     print("AUth DB schema created")
 
 def create_access_token(data: dict, expire_delta: timedelta | None = None):

@@ -15,6 +15,7 @@ from fastapi_cache.backends.redis import RedisBackend
 from fastapi_cache.decorator import cache
 import redis.asyncio as redis 
 import functools
+from .otel_config import instrument_app, create_span
 
 SECRET_KEY = "this_is_a_fast_api_session_12"
 ALGORITHM = "HS256"
@@ -29,11 +30,12 @@ async def startup():
         await conn.run_sync(Base.metadata.create_all)
     print("Database schema created")
 
-    redis_client = redis.from_url("redis://localhost:14879", encoding="utf8", decode_responses=True)
+    redis_client = redis.from_url("redis://redis:6379", encoding="utf8", decode_responses=True)
     FastAPICache.init(RedisBackend(redis_client), prefix="fastapi-cache")
+    instrument_app(app)
     print("Cache init!!")
 
-employee_redis = redis.from_url("redis://localhost:14879", encoding="utf8", decode_responses=True)
+employee_redis = redis.from_url("redis://redis:6379", encoding="utf8", decode_responses=True)
 
 async def send_welcome_email(employee_name: str):
     await asyncio.sleep(2)

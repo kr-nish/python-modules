@@ -20,6 +20,13 @@ pydantic-settings==2.6.0
 
 # Async support and background tasks
 aiofiles==23.2.1
-
+email-validator
+pydantic[email]
 # Other optional dependencies
 python-multipart==0.0.9  # required if you use form-data endpoints
+opentelemetry-api 
+opentelemetry-sdk 
+opentelemetry-instrumentation-fastapi 
+opentelemetry-instrumentation-sqlalchemy 
+opentelemetry-instrumentation-redis 
+opentelemetry-exporter-otlp-proto-grpc
