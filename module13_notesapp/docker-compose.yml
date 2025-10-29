@@ -1,0 +1,30 @@
+services:
+  notes-a:
+    image: flask-notes:opt
+    volumes:
+      - notes_data:/app/data
+    networks:
+      - notes-net
+    ports:
+      - "5000:5000"
+
+  notes-b:
+    image: flask-notes:opt
+    environment:
+      - NOTE_STORAGE_PATH=/app/data
+    volumes:
+      - notes_data:/app/data
+    networks:
+      - notes-net
+
+# add a service that will start a postgres container and that container should expose to 5432
+
+volumes:
+  notes_data:
+    labels: 
+      'name' : "volume for notes app"
+
+
+networks:
+  notes-net:
+    driver: bridge

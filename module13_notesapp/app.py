@@ -4,7 +4,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-DATA_FILE = '/app/data/notes.json'
+DATA_FILE = os.getenv('NOTE_STORAGE_PATH','/app/data') + '/notes.json'
 
 def load_notes():
     if not os.path.exists(DATA_FILE):
