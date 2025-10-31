@@ -1,11 +1,5 @@
-__pycache__
+__pycache__/
 *.pyc
-*.pyo
-*.pyd
-.Python
+pytest_cache/
 env/
-venv/
-.git
-.gitignore
-README.md
-.DS_Store
+run/

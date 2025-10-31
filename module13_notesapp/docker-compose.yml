@@ -2,13 +2,17 @@ services:
   db:
     image: postgres:16-alpine
     environment:
-      POSTGRESDB: notesdb
+      POSTGRES_DB: notesdb
       POSTGRES_USER: user
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
-      - notes-net'
+      - notes-net
+    ports:
+      - "5433:5432"
+    secrets:
+      - db_password
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d notesdb"]
       interval: 10s
@@ -16,11 +20,10 @@ services:
       retries: 5
       start_period: 20s
 
-
   notes-a:
     image: notes-multi:latest
     environment:
-      DATABASE_URL: postgresql://user:${POSTGRES_PASSWORD}@db:5432/notesdb
+      DATABASE_URL: postgresql://user:pass123@db:5432/notesdb
     volumes:
       - notes_data:/app/data
     networks:
@@ -30,7 +33,7 @@ services:
     secrets:
       - db_password
       - notes_encrypt_key
-    depends_on: 
+    depends_on:
       db:
         condition: service_healthy
     healthcheck:
@@ -51,6 +54,3 @@ volumes:
 networks:
   notes-net:
     driver: bridge
-
-
-# add a service that will start a postgres container and that container should expose to 5432
